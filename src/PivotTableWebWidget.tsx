@@ -41,7 +41,7 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
         switch (dataSourceType) {
             case "datasource":
                 // Do not check for ds status here. If it is loading, we render current data, if any, this prevents flickering.
-                if (!ds?.items) {
+                if (!ds?.items || ds?.items.length === 0) {
                     if (this.props.logToConsole) {
                         this.logMessageToConsole("render: ds not yet available");
                     }
@@ -96,28 +96,24 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
         }
 
         const className = this.CLASS_WIDGET + " " + this.props.class;
-        if (this.tableData) {
-            if (this.tableData.bodyRows.length > 0) {
-                return (
-                    <div className={className}>
-                        <table>
-                            <thead>
-                                <tr>{this.tableData.headerRow.cells.map(cell => this.renderCell(cell))}</tr>
-                            </thead>
-                            <tbody>{this.tableData.bodyRows.map(row => this.renderTableRow(row))}</tbody>
-                            {this.renderTableFooter()}
-                        </table>
-                    </div>
-                );
-            } else {
-                return (
-                    <div className={className}>
-                        <span className={this.CLASS_NO_DATA}>{this.props.noDataText.value}</span>
-                    </div>
-                );
-            }
+        if (this.tableData && this.tableData.bodyRows.length > 0) {
+            return (
+                <div className={className}>
+                    <table>
+                        <thead>
+                            <tr>{this.tableData.headerRow.cells.map(cell => this.renderCell(cell))}</tr>
+                        </thead>
+                        <tbody>{this.tableData.bodyRows.map(row => this.renderTableRow(row))}</tbody>
+                        {this.renderTableFooter()}
+                    </table>
+                </div>
+            );
         } else {
-            return <div className={className}></div>;
+            return (
+                <div className={className}>
+                    <span className={this.CLASS_NO_DATA}>{this.props.noDataText.value}</span>
+                </div>
+            );
         }
     }
 
