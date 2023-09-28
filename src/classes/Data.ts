@@ -72,7 +72,12 @@ export default class Data {
         ds.items.map(item => this.getDataItemFromDatasource(item));
 
         // Create table data
-        this.createTableData();
+        if (this._modelData.valueMap.size > 0) {
+            // Create table data
+            this.createTableData();
+        } else {
+            return;
+        }
 
         // Done
         if (this._widgetProps.logToConsole) {
