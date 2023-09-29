@@ -1,7 +1,7 @@
 {
   "name": "pivottablewebwidget",
   "widgetName": "PivotTableWebWidget",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Pivot table web widget",
   "copyright": "ITvisors 2020",
   "author": "Marcel Groeneweg",
@@ -18,7 +18,6 @@
   "scripts": {
     "start": "pluggable-widgets-tools start:server",
     "dev": "pluggable-widgets-tools start:web",
-
     "build": "pluggable-widgets-tools build:web",
     "lint": "pluggable-widgets-tools lint",
     "lint:fix": "pluggable-widgets-tools lint:fix",
@@ -26,13 +25,20 @@
     "release": "pluggable-widgets-tools release:web"
   },
   "devDependencies": {
-    "@mendix/pluggable-widgets-tools": "^9.0.0",
+    "@mendix/pluggable-widgets-tools": "^9.24.1",
     "@types/big.js": "^6.0.2",
-    "@types/react": "~17.0.1",
-    "@types/react-dom": "~17.0.1",
     "big.js": "^5.2.2",
     "mendix-client": "^7.15.8"
   },
   "dependencies": {
+
+  },
+  "resolutions": {
+    "react": "18.2.0",
+    "react-native": "0.70.7"
+  },
+  "overrides": {
+    "react": "18.2.0",
+    "react-native": "0.70.7"
   }
 }
