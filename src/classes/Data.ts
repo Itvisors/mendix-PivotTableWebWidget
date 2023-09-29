@@ -368,7 +368,7 @@ export default class Data {
         const { onClickAction, onCellClickXIdAttr, onCellClickYIdAttr } = this._widgetProps;
 
         // Check cell value action against the cell data type. Count is always allowed.
-        if (this._widgetProps.cellValueAction !== "count") {
+        if (this._widgetProps.cellValueAction !== "count" && this._modelData.valueMap.size > 0) {
             const key = this._widgetProps.cellValueAction + "_" + this._valueDataType;
             if (this._validActionAttrTypeCombinations.indexOf(key) < 0) {
                 this.addErrorToModel("Cell value action " + this._widgetProps.cellValueAction + " is not allowed for cell data type " + this._valueDataType);
