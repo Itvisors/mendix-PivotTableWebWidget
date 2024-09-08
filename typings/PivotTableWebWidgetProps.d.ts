@@ -108,6 +108,7 @@ export interface PivotTableWebWidgetPreviewProps {
     style: string;
     styleObject?: CSSProperties;
     readOnly: boolean;
+    renderMode?: "design" | "xray" | "structure";
     dataSourceType: DataSourceTypeEnum;
     cellValueAction: CellValueActionEnum;
     precisionForAverage: number | null;
