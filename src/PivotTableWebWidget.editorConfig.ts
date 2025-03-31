@@ -114,21 +114,13 @@ export function getProperties(values: PivotTableWebWidgetPreviewProps, defaultPr
         hidePropertyIn(defaultProperties, values, "totalRowLabel");
     }
 
-    // Hide onClick properties if no action configured
-    if (!values.onClickAction) {
-        hidePropertiesIn(defaultProperties, values, ["onCellClickXIdAttr", "onCellClickYIdAttr"]);
-    }
-
     // Hide export properties if export not allowed
     if (!values.allowExport) {
         hidePropertiesIn(defaultProperties, values, [
             "exportButtonCaption",
             "exportButtonClass",
             "exportFilenamePrefix",
-            "exportFilenameDateformat",
-            "exportDataAttr",
-            "exportFilenameAttr",
-            "exportAction"
+            "exportFilenameDateformat"
         ]);
     }
 
@@ -176,45 +168,6 @@ function checkCommonProps(values: PivotTableWebWidgetPreviewProps): Problem[] {
         });
     }
 
-    const { onClickAction, onCellClickXIdAttr, onCellClickYIdAttr } = values;
-
-    if (onClickAction) {
-        if (!onCellClickXIdAttr) {
-            errors.push({
-                property: "onCellClickXIdAttr",
-                message: "On click X-axis ID attribute is required when On click action is configured"
-            });
-        }
-        if (!onCellClickYIdAttr) {
-            errors.push({
-                property: "onCellClickYIdAttr",
-                message: "On click Y-axis ID attribute is required when On click action is configured"
-            });
-        }
-    }
-
-    const { allowExport, exportDataAttr, exportFilenameAttr, exportAction } = values;
-
-    if (allowExport) {
-        if (!exportDataAttr) {
-            errors.push({
-                property: "exportDataAttr",
-                message: "Export data attribute is required when export is allowed"
-            });
-        }
-        if (!exportFilenameAttr) {
-            errors.push({
-                property: "exportFilenameAttr",
-                message: "Export file name attribute is required when export is allowed"
-            });
-        }
-        if (!exportAction) {
-            errors.push({
-                property: "exportAction",
-                message: "Export action is required when export is allowed"
-            });
-        }
-    }
 
     return errors;
 }

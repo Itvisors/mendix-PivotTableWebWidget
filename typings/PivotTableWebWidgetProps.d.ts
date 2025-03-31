@@ -4,7 +4,7 @@
  * @author Mendix Widgets Framework Team
  */
 import { CSSProperties } from "react";
-import { ActionValue, DynamicValue, EditableValue, ListValue, ListAttributeValue } from "mendix";
+import { ActionValue, DynamicValue, EditableValue, ListValue, Option, ListAttributeValue } from "mendix";
 import { Big } from "big.js";
 
 export type DataSourceTypeEnum = "datasource" | "serviceCall";
@@ -84,17 +84,12 @@ export interface PivotTableWebWidgetContainerProps {
     xSortDirection: XSortDirectionEnum;
     ySortAttr: YSortAttrEnum;
     ySortDirection: YSortDirectionEnum;
-    onClickAction?: ActionValue;
-    onCellClickXIdAttr?: EditableValue<Big | string>;
-    onCellClickYIdAttr?: EditableValue<Big | string>;
+    onClickAction?: ActionValue<{ onClickX: Option<string>; onClickY: Option<string> }>;
     allowExport: boolean;
     exportButtonCaption: DynamicValue<string>;
     exportButtonClass: string;
     exportFilenamePrefix: string;
     exportFilenameDateformat: DynamicValue<string>;
-    exportDataAttr?: EditableValue<string>;
-    exportFilenameAttr?: EditableValue<string>;
-    exportAction?: ActionValue;
     logToConsole: boolean;
     dumpServiceResponseInConsole: boolean;
 }
@@ -143,16 +138,11 @@ export interface PivotTableWebWidgetPreviewProps {
     ySortAttr: YSortAttrEnum;
     ySortDirection: YSortDirectionEnum;
     onClickAction: {} | null;
-    onCellClickXIdAttr: string;
-    onCellClickYIdAttr: string;
     allowExport: boolean;
     exportButtonCaption: string;
     exportButtonClass: string;
     exportFilenamePrefix: string;
     exportFilenameDateformat: string;
-    exportDataAttr: string;
-    exportFilenameAttr: string;
-    exportAction: {} | null;
     logToConsole: boolean;
     dumpServiceResponseInConsole: boolean;
 }

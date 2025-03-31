@@ -205,19 +205,16 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
             this.logMessageToConsole("onClick: Handle click on X: " + cell.idValueX + ", Y: " + cell.idValueY);
         }
 
-        const { onClickAction, onCellClickXIdAttr, onCellClickYIdAttr } = this.props;
+        const { onClickAction } = this.props;
         e.preventDefault();
 
         if (onClickAction && onClickAction.canExecute && !onClickAction.isExecuting) {
             const idValueX = cell.idValueX ? cell.idValueX : "";
-            if (onCellClickXIdAttr) {
-                onCellClickXIdAttr.setTextValue(idValueX);
-            }
             const idValueY = cell.idValueY ? cell.idValueY : "";
-            if (onCellClickYIdAttr) {
-                onCellClickYIdAttr.setTextValue(idValueY);
-            }
-            onClickAction.execute();
+            onClickAction.execute({
+                onClickX: idValueX,
+                onClickY: idValueY
+            });
         }
     }
 
@@ -243,32 +240,39 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
             return;
         }
 
-        const { exportFilenamePrefix, exportFilenameDateformat, exportDataAttr, exportFilenameAttr, exportAction } = this.props;
+        const { exportFilenamePrefix, exportFilenameDateformat } = this.props;
         const { headerRow, bodyRows, footerRow } = this.tableData;
 
-        if (exportDataAttr && exportFilenameAttr && exportAction && exportAction.canExecute && !exportAction.isExecuting) {
-            let exportData = "";
+        let exportData = "";
 
-            // Header
-            exportData += this.exportRowValues(headerRow);
+        // Header
+        exportData += this.exportRowValues(headerRow);
 
-            // Body
-            for (const row of bodyRows) {
-                exportData += this.exportRowValues(row);
-            }
-
-            // Footer
-            if (this.props.showTotalRow && footerRow) {
-                exportData += this.exportRowValues(footerRow);
-            }
-
-            const dateFormat = exportFilenameDateformat?.value ? exportFilenameDateformat.value : "dd-MM-yyyy HH:mm:ss";
-            const dateString = mx.parser.formatValue(new Date(), "datetime", { datePattern: dateFormat });
-            const fileName = exportFilenamePrefix + " " + dateString + ".csv";
-            exportDataAttr.setValue(exportData);
-            exportFilenameAttr.setValue(fileName);
-            exportAction.execute();
+        // Body
+        for (const row of bodyRows) {
+            exportData += this.exportRowValues(row);
         }
+
+        // Footer
+        if (this.props.showTotalRow && footerRow) {
+            exportData += this.exportRowValues(footerRow);
+        }
+
+        const dateFormat = exportFilenameDateformat?.value ? exportFilenameDateformat.value : "dd-MM-yyyy HH:mm:ss";
+        const dateString = mx.parser.formatValue(new Date(), "datetime", { datePattern: dateFormat });
+        const fileName = exportFilenamePrefix + " " + dateString + ".csv";
+        const blob = new Blob([exportData], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+    
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+    
+        // Cleanup temporary element
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     }
 
     private exportRowValues(row: TableRowData): string {

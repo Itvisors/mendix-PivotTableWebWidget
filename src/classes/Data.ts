@@ -365,29 +365,12 @@ export default class Data {
     private validateModelData(): boolean {
         let result = true;
 
-        const { onClickAction, onCellClickXIdAttr, onCellClickYIdAttr } = this._widgetProps;
-
         // Check cell value action against the cell data type. Count is always allowed.
         if (this._widgetProps.cellValueAction !== "count" && this._modelData.valueMap.size > 0) {
             const key = this._widgetProps.cellValueAction + "_" + this._valueDataType;
             if (this._validActionAttrTypeCombinations.indexOf(key) < 0) {
                 this.addErrorToModel("Cell value action " + this._widgetProps.cellValueAction + " is not allowed for cell data type " + this._valueDataType);
                 result = false;
-            }
-        }
-
-        if (onClickAction) {
-            if (onCellClickXIdAttr) {
-                if (onCellClickXIdAttr.status === ValueStatus.Available && onCellClickXIdAttr.readOnly) {
-                    this.addErrorToModel("On click X-axis ID attribute is readonly, be sure to set your dataview to editable and grant access");
-                    result = false;
-                }
-            }
-            if (onCellClickYIdAttr) {
-                if (onCellClickYIdAttr.status === ValueStatus.Available && onCellClickYIdAttr.readOnly) {
-                    this.addErrorToModel("On click Y-axis ID attribute is readonly, be sure to set your dataview to editable and grant access");
-                    result = false;
-                }
             }
         }
 
@@ -411,23 +394,6 @@ export default class Data {
                     default:
                         this.addErrorToModel("Conditional styling can only be used for dates and numeric values.");
                         break;
-                }
-            }
-        }
-
-        const { allowExport, exportDataAttr, exportFilenameAttr } = this._widgetProps;
-
-        if (allowExport) {
-            if (exportDataAttr) {
-                if (exportDataAttr.status === ValueStatus.Available && exportDataAttr.readOnly) {
-                    this.addErrorToModel("Export data attribute is readonly, be sure to set your dataview to editable and grant access");
-                    result = false;
-                }
-            }
-            if (exportFilenameAttr) {
-                if (exportFilenameAttr.status === ValueStatus.Available && exportFilenameAttr.readOnly) {
-                    this.addErrorToModel("Export file name attribute is readonly, be sure to set your dataview to editable and grant access");
-                    result = false;
                 }
             }
         }
