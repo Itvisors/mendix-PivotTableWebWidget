@@ -129,11 +129,17 @@ Note that the widget will order the styling items on ascending value, but for re
 The display action allows an additional class to be specified, containing the actual value. Most effective for a small number of unique values or enumerations. The class name will start with the fixed value display- followed by the actual value in lower case. Note that any values other than a thru z and 0 thru 9 are replaced by _ in the class name.
 
 # Click handling
-When the user clicks a cell, the widget will set the X and Y id values on the context object and call the action configured on the widget.
+When the user clicks a cell, the widget will call the action configured on the widget.
+
+For Mendix 10.21 and newer, the parameters are passed as action variables onClickX and onClickY to the microflow or nanoflow. When you select a microflow or nanoflow as action, you can configure the action variables as parameters.
+
+For earlier Mendix releases, the widget will set the X and Y id values on the context object.
 
 # Export
 
-The widget can export the table data as CSV. There are options to force a save file dialog directly from the browser. As some don't look very solid and others don't play well with React, this widget relies on the backend to handle the file creation. You will need to do the following:
+The widget can export the table data as CSV. For Mendix 10.21 and newer, the file download is triggered directly from the browser.
+
+For earlier Mendix releases, the export relies on the backend to handle the file creation. You will need to do the following:
 - Create an entity that inherits from FileDocument to create the CSV file.
 - Create a microflow that handles the export:
     - Create an object of the entity that inherits from FileDocument. Unless the document needs to be kept, be sure to set DeleteAfterDownload to true.
