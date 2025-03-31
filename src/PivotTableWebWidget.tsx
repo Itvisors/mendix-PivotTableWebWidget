@@ -263,13 +263,13 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
         const fileName = exportFilenamePrefix + " " + dateString + ".csv";
         const blob = new Blob([exportData], { type: "text/csv" });
         const url = URL.createObjectURL(blob);
-    
+
         const a = document.createElement("a");
         a.href = url;
         a.download = fileName;
         document.body.appendChild(a);
         a.click();
-    
+
         // Cleanup temporary element
         document.body.removeChild(a);
         URL.revokeObjectURL(url);

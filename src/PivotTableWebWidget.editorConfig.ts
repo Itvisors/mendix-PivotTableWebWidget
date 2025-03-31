@@ -116,12 +116,7 @@ export function getProperties(values: PivotTableWebWidgetPreviewProps, defaultPr
 
     // Hide export properties if export not allowed
     if (!values.allowExport) {
-        hidePropertiesIn(defaultProperties, values, [
-            "exportButtonCaption",
-            "exportButtonClass",
-            "exportFilenamePrefix",
-            "exportFilenameDateformat"
-        ]);
+        hidePropertiesIn(defaultProperties, values, ["exportButtonCaption", "exportButtonClass", "exportFilenamePrefix", "exportFilenameDateformat"]);
     }
 
     return defaultProperties;
@@ -167,7 +162,6 @@ function checkCommonProps(values: PivotTableWebWidgetPreviewProps): Problem[] {
             message: "Conditional styling is not allowed for action Display"
         });
     }
-
 
     return errors;
 }
