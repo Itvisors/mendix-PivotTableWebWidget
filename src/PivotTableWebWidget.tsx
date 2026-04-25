@@ -1,13 +1,11 @@
-import { Component, ReactNode, createElement, SyntheticEvent } from "react";
+import { Component, ReactNode, SyntheticEvent } from "react";
 import { PivotTableWebWidgetContainerProps } from "../typings/PivotTableWebWidgetProps";
 import { ObjectItem, ValueStatus } from "mendix";
 import { ErrorArray, TableCellData, TableData, TableRowData, ValueDataType } from "./types/CustomTypes";
+import { formatValue } from "mendix/parser";
 
 import "./ui/PivotTableWebWidget.css";
 import Data from "./classes/Data";
-
-// Report mx as global defined elsewhere.
-declare const mx: any;
 
 export default class PivotTableWebWidget extends Component<PivotTableWebWidgetContainerProps> {
     private CLASS_WIDGET = "pivotTableWidget";
@@ -259,7 +257,7 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
         }
 
         const dateFormat = exportFilenameDateformat?.value ? exportFilenameDateformat.value : "dd-MM-yyyy HH:mm:ss";
-        const dateString = mx.parser.formatValue(new Date(), "datetime", { datePattern: dateFormat });
+        const dateString = formatValue(new Date(), "DateTime", { datePattern: dateFormat });
         const fileName = exportFilenamePrefix + " " + dateString + ".csv";
         const blob = new Blob([exportData], { type: "text/csv" });
         const url = URL.createObjectURL(blob);

@@ -15,6 +15,8 @@ import {
 import { Big } from "big.js";
 import { PivotTableWebWidgetContainerProps, XSortAttrEnum } from "../../typings/PivotTableWebWidgetProps";
 import { ListAttributeValue, ObjectItem, ValueStatus } from "mendix";
+import { getCSRFToken } from "mendix/session";
+import { formatValue } from "mendix/parser";
 
 // Report mx as global defined elsewhere.
 declare const mx: any;
@@ -236,9 +238,7 @@ export default class Data {
                     this._valueDataType = "string";
             }
 
-            // Example taken from https://github.com/mendixlabs/charts
-            // You need to include mendix client, see https://www.npmjs.com/package/mendix-client
-            const token = mx.session.getConfig("csrftoken");
+            const token = getCSRFToken();
             window
                 .fetch(url, {
                     credentials: "include",
@@ -774,7 +774,7 @@ export default class Data {
     }
 
     private formatDateFromNumber(numValue: number, dateFormat: string): string {
-        return mx.parser.formatValue(new Date(numValue), "datetime", { datePattern: dateFormat });
+        return formatValue(new Date(numValue), "DateTime", { datePattern: dateFormat });
     }
 
     private formatNumericValue(value: number, precision?: number): string {
@@ -782,7 +782,7 @@ export default class Data {
         if (precision === undefined) {
             precision = precisionForNumbers;
         }
-        return mx.parser.formatValue(value, "decimal", { places: precision, groups: useThousandSeparators });
+        return formatValue(value, "Decimal", { places: precision, groups: useThousandSeparators });
     }
 
     get modelData(): ModelData {
