@@ -436,7 +436,7 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
     private convertRawCellValue(rawCellValue: ModelCellValue): string | number | Date {
         switch (this.valueDataType) {
             case "date":
-                return new Date(Number(rawCellValue));
+                return this.toExcelDate(new Date(Number(rawCellValue)));
 
             case "number":
                 return Number(rawCellValue);
@@ -444,6 +444,16 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
             default:
                 return rawCellValue;
         }
+    }
+
+    private toExcelDate(date: Date): Date {
+        // ExcelJS serializes a Date's UTC getters into the Excel date serial number, but the value we
+        // actually want to show is this Date's local wall-clock time (the same local time the pivot table
+        // itself, and Mendix's own client, already use). Rebuild the Date so its UTC components equal
+        // those local components, otherwise Excel shows a value shifted by the local UTC offset.
+        return new Date(
+            Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds())
+        );
     }
 
     private getCellClasses(cell: TableCellData): string {
