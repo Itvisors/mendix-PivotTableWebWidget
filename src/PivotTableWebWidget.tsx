@@ -366,18 +366,18 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
 
     private getExcelCellValue(cell: TableCellData): string | number | Date | undefined {
         switch (cell.cellType) {
-            // Altijd leeg in Excel, ongeacht een eventuele (label)waarde.
+            // Always empty in Excel
             case "EmptyTopLeft":
             case "ExportButton":
             case "Empty":
                 return undefined;
 
-            // Labels zijn altijd tekst, rawCellValue wordt hier niet voor gebruikt.
+            // Labels are always text, rawCellValue not used here.
             case "ColumnHeader":
             case "RowHeader":
                 return cell.cellValue ? cell.cellValue : undefined;
 
-            // Gebruik de getypeerde raw waarde als die eenduidig is, anders terugvallen op de opgemaakte weergavewaarde.
+            // Use the typed raw value if available, fallback on formatted cell value.
             case "Value":
             case "RowTotal":
             case "ColumnTotal":
