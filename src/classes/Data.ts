@@ -18,9 +18,6 @@ import { ListAttributeValue, ObjectItem, ValueStatus } from "mendix";
 import { getCSRFToken } from "mendix/session";
 import { formatValue } from "mendix/parser";
 
-// Report mx as global defined elsewhere.
-declare const mx: any;
-
 export default class Data {
     private CLASS_Cell_TOP_LEFT = "pivotTableTopLeft";
     private CLASS_COL_HEADER = "pivotTableColumnHeader";
@@ -584,6 +581,7 @@ export default class Data {
             cells.push({
                 cellType: "RowTotal",
                 cellValue: this.formatValue(rowTotal),
+                rawCellValue: rowTotal,
                 idValueY: "" + yAxisKey.idValue,
                 classes: this.CLASS_ROW_TOTAL
             });
@@ -624,6 +622,7 @@ export default class Data {
             const cell: TableCellData = {
                 cellType: "ColumnTotal",
                 cellValue: this.formatValue(columnTotal),
+                rawCellValue: columnTotal,
                 idValueX: "" + xAxisKey.idValue,
                 classes: this.CLASS_COL_TOTAL
             };
@@ -635,6 +634,7 @@ export default class Data {
             cells.push({
                 cellType: "RowColumnTotal",
                 cellValue: this.formatValue(rowTotal),
+                rawCellValue: rowTotal,
                 classes: this.CLASS_ROW_TOTAL
             });
         }
@@ -665,8 +665,13 @@ export default class Data {
             cell.classes = this.CLASS_CELL;
             if (cellValueAction === "display") {
                 cell.cellValue = this.getCellDisplayValue(value);
+                // For display, take the value when there is one and only one value available
+                if (value.values && value.values.length === 1) {
+                    cell.rawCellValue = value.values[0];
+                }
             } else {
                 cell.cellValue = this.formatValue(value.aggregatedValue);
+                cell.rawCellValue = value.aggregatedValue;
             }
             // For display, when requested, add the cell value as class. Useful for custom styling enum values.
             if (cellValueAction === "display" && useDisplayValueForCss) {
@@ -766,7 +771,11 @@ export default class Data {
                 return this.formatDateFromNumber(numValue, dateFormat);
 
             case "number":
-                return this.formatNumericValue(numValue);
+                if (this._widgetProps.cellValueAction === "count") {
+                    return this.formatNumericValue(numValue, 0);
+                } else {
+                    return this.formatNumericValue(numValue);
+                }
 
             default:
                 return "" + numValue;

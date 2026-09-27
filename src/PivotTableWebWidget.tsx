@@ -1,7 +1,8 @@
 import { Component, ReactNode, SyntheticEvent } from "react";
 import { PivotTableWebWidgetContainerProps } from "../typings/PivotTableWebWidgetProps";
 import { ObjectItem, ValueStatus } from "mendix";
-import { ErrorArray, TableCellData, TableData, TableRowData, ValueDataType } from "./types/CustomTypes";
+import { ErrorArray, ModelCellValue, TableCellData, TableData, TableRowData, ValueDataType } from "./types/CustomTypes";
+import ExcelJS from "exceljs";
 import { formatValue } from "mendix/parser";
 
 import "./ui/PivotTableWebWidget.css";
@@ -226,7 +227,7 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
         );
     }
 
-    onClickExportButton(): void {
+    async onClickExportButton(): Promise<void> {
         if (this.props.logToConsole) {
             this.logMessageToConsole("onClickExportButton called");
         }
@@ -238,57 +239,77 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
             return;
         }
 
-        const { exportFilenamePrefix, exportFilenameDateformat } = this.props;
-        const { headerRow, bodyRows, footerRow } = this.tableData;
+        let url;
+
+        switch (this.props.exportType) {
+            case "csv":
+                url = this.exportToCSV(this.tableData);
+                break;
+
+            case "xlsx":
+                url = await this.exportToExcel(this.tableData);
+                break;
+
+            default:
+                break;
+        }
+
+        if (url) {
+            const { exportFilenamePrefix, exportFilenameDateformat } = this.props;
+            const dateFormat = exportFilenameDateformat?.value ? exportFilenameDateformat.value : "dd-MM-yyyy HH:mm:ss";
+            const dateString = formatValue(new Date(), "DateTime", { datePattern: dateFormat });
+            const fileName = exportFilenamePrefix + " " + dateString + "." + this.props.exportType;
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+
+            // Cleanup temporary element
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    }
+
+    private exportToCSV(tableData: TableData): string {
+        const { headerRow, bodyRows, footerRow } = tableData;
 
         let exportData = "";
 
         // Header
-        exportData += this.exportRowValues(headerRow);
+        exportData += this.exportRowValuesToCSV(headerRow);
 
         // Body
         for (const row of bodyRows) {
-            exportData += this.exportRowValues(row);
+            exportData += this.exportRowValuesToCSV(row);
         }
 
         // Footer
         if (this.props.showTotalRow && footerRow) {
-            exportData += this.exportRowValues(footerRow);
+            exportData += this.exportRowValuesToCSV(footerRow);
         }
 
-        const dateFormat = exportFilenameDateformat?.value ? exportFilenameDateformat.value : "dd-MM-yyyy HH:mm:ss";
-        const dateString = formatValue(new Date(), "DateTime", { datePattern: dateFormat });
-        const fileName = exportFilenamePrefix + " " + dateString + ".csv";
         const blob = new Blob([exportData], { type: "text/csv" });
         const url = URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-
-        // Cleanup temporary element
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        return url;
     }
 
-    private exportRowValues(row: TableRowData): string {
+    private exportRowValuesToCSV(row: TableRowData): string {
         let result = "";
         let firstCell = true;
         for (const cell of row.cells) {
             if (firstCell) {
-                result = this.exportCellValue(cell);
+                result = this.exportCellValueForCSV(cell);
                 firstCell = false;
             } else {
-                result += ";" + this.exportCellValue(cell);
+                result += ";" + this.exportCellValueForCSV(cell);
             }
         }
         result += "\r\n";
         return result;
     }
 
-    private exportCellValue(cell: TableCellData): string {
+    private exportCellValueForCSV(cell: TableCellData): string {
         switch (cell.cellType) {
             case "EmptyTopLeft":
             case "ExportButton":
@@ -306,6 +327,81 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
                 } else {
                     return cellValue;
                 }
+        }
+    }
+
+    private async exportToExcel(tableData: TableData): Promise<string> {
+        if (this.props.logToConsole) {
+            this.logMessageToConsole("exportToExcel");
+        }
+
+        const { headerRow, bodyRows, footerRow } = tableData;
+
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet("Export");
+
+        // Header
+        this.addExcelRow(worksheet, headerRow);
+
+        // Body
+        for (const row of bodyRows) {
+            this.addExcelRow(worksheet, row);
+        }
+
+        // Footer
+        if (this.props.showTotalRow && footerRow) {
+            this.addExcelRow(worksheet, footerRow);
+        }
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        return URL.createObjectURL(blob);
+    }
+
+    private addExcelRow(worksheet: ExcelJS.Worksheet, row: TableRowData): void {
+        // Styling (bold, font color, background color) volgt later.
+        const rowValues = row.cells.map(cell => this.getExcelCellValue(cell));
+        worksheet.addRow(rowValues);
+    }
+
+    private getExcelCellValue(cell: TableCellData): string | number | Date | undefined {
+        switch (cell.cellType) {
+            // Altijd leeg in Excel, ongeacht een eventuele (label)waarde.
+            case "EmptyTopLeft":
+            case "ExportButton":
+            case "Empty":
+                return undefined;
+
+            // Labels zijn altijd tekst, rawCellValue wordt hier niet voor gebruikt.
+            case "ColumnHeader":
+            case "RowHeader":
+                return cell.cellValue ? cell.cellValue : undefined;
+
+            // Gebruik de getypeerde raw waarde als die eenduidig is, anders terugvallen op de opgemaakte weergavewaarde.
+            case "Value":
+            case "RowTotal":
+            case "ColumnTotal":
+            case "RowColumnTotal":
+                if (cell.rawCellValue !== undefined) {
+                    return this.convertRawCellValue(cell.rawCellValue);
+                }
+                return cell.cellValue ? cell.cellValue : undefined;
+
+            default:
+                return cell.cellValue ? cell.cellValue : undefined;
+        }
+    }
+
+    private convertRawCellValue(rawCellValue: ModelCellValue): string | number | Date {
+        switch (this.valueDataType) {
+            case "date":
+                return new Date(Number(rawCellValue));
+
+            case "number":
+                return Number(rawCellValue);
+
+            default:
+                return rawCellValue;
         }
     }
 

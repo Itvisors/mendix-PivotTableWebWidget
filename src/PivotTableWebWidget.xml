@@ -325,10 +325,18 @@
 
         <!-- Export properties -->
 
-        <propertyGroup caption="Export to CSV">
+        <propertyGroup caption="Export">
             <property key="allowExport" type="boolean" defaultValue="false">
                 <caption>Allow export</caption>
                 <description>If allowed, the top left cell will contain the export button.</description>
+            </property>
+            <property key="exportType" type="enumeration" defaultValue="csv">
+                <caption>Export type</caption>
+                <description></description>
+                <enumerationValues>
+                    <enumerationValue key="csv">CSV</enumerationValue>
+                    <enumerationValue key="xlsx">XLSX</enumerationValue>
+                </enumerationValues>
             </property>
             <property key="exportButtonCaption" type="textTemplate">
                 <caption>Button caption</caption>
@@ -344,7 +352,7 @@
             </property>
             <property key="exportFilenamePrefix" type="string" defaultValue="export">
                 <caption>File name prefix</caption>
-                <description>Export file name prefix. Widget will add the date and csv extension</description>
+                <description>Export file name prefix. Widget will add the date and extension</description>
             </property>
             <property key="exportFilenameDateformat" type="textTemplate">
                 <caption>File name date format</caption>

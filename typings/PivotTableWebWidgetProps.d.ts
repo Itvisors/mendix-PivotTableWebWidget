@@ -36,6 +36,8 @@ export type YSortAttrEnum = "label" | "id";
 
 export type YSortDirectionEnum = "asc" | "desc";
 
+export type ExportTypeEnum = "csv" | "xlsx";
+
 export interface ServiceParmListPreviewType {
     parameterName: string;
     parameterValue: string;
@@ -86,6 +88,7 @@ export interface PivotTableWebWidgetContainerProps {
     ySortDirection: YSortDirectionEnum;
     onClickAction?: ActionValue<{ onClickX: Option<string>; onClickY: Option<string> }>;
     allowExport: boolean;
+    exportType: ExportTypeEnum;
     exportButtonCaption: DynamicValue<string>;
     exportButtonClass: string;
     exportFilenamePrefix: string;
@@ -139,6 +142,7 @@ export interface PivotTableWebWidgetPreviewProps {
     ySortDirection: YSortDirectionEnum;
     onClickAction: {} | null;
     allowExport: boolean;
+    exportType: ExportTypeEnum;
     exportButtonCaption: string;
     exportButtonClass: string;
     exportFilenamePrefix: string;

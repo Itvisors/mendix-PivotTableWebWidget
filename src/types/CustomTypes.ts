@@ -11,7 +11,12 @@ export interface TableCellData {
     idValueX?: string;
     idValueY?: string;
     cellValue?: string;
+    rawCellValue?: ModelCellValue;
     classes?: string;
+    excelFontColor?: string;
+    excelBackgroundColor?: string;
+    excelTextBold?: boolean;
+    excelRotation?: number;
 }
 
 export interface TableRowData {

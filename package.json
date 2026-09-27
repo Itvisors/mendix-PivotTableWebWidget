@@ -29,7 +29,9 @@
     "@types/big.js": "^6.0.2",
     "big.js": "^6.0.2"
   },
-  "dependencies": {},
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  },
   "resolutions": {
     "react": "19.0.0",
     "react-native": "0.78.2",
