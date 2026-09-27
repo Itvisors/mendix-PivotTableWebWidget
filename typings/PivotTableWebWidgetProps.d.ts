@@ -56,7 +56,6 @@ export interface PivotTableWebWidgetContainerProps {
     tabIndex?: number;
     dataSourceType: DataSourceTypeEnum;
     cellValueAction: CellValueActionEnum;
-    precisionForAverage: number;
     precisionForNumbers: number;
     useThousandSeparators: boolean;
     cellValueDateformat: DynamicValue<string>;
@@ -93,6 +92,7 @@ export interface PivotTableWebWidgetContainerProps {
     exportButtonClass: string;
     exportFilenamePrefix: string;
     exportFilenameDateformat: DynamicValue<string>;
+    exportDateformat: DynamicValue<string>;
     logToConsole: boolean;
     dumpServiceResponseInConsole: boolean;
 }
@@ -110,7 +110,6 @@ export interface PivotTableWebWidgetPreviewProps {
     translate: (text: string) => string;
     dataSourceType: DataSourceTypeEnum;
     cellValueAction: CellValueActionEnum;
-    precisionForAverage: number | null;
     precisionForNumbers: number | null;
     useThousandSeparators: boolean;
     cellValueDateformat: string;
@@ -147,6 +146,7 @@ export interface PivotTableWebWidgetPreviewProps {
     exportButtonClass: string;
     exportFilenamePrefix: string;
     exportFilenameDateformat: string;
+    exportDateformat: string;
     logToConsole: boolean;
     dumpServiceResponseInConsole: boolean;
 }

@@ -96,12 +96,7 @@ export function getProperties(values: PivotTableWebWidgetPreviewProps, defaultPr
 
     // Hide attribute related properties for count as no attribute value is used.
     if (values.cellValueAction === "count") {
-        hidePropertiesIn(defaultProperties, values, ["precisionForAverage", "precisionForNumbers", "cellValueDateformat", "cellValueAttr"]);
-    }
-
-    // Hide precision for average if no average requested
-    if (values.cellValueAction !== "average") {
-        hidePropertyIn(defaultProperties, values, "precisionForAverage");
+        hidePropertiesIn(defaultProperties, values, ["precisionForNumbers", "cellValueDateformat", "cellValueAttr"]);
     }
 
     // Hide total column label if not applicable

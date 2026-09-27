@@ -31,10 +31,6 @@
                     <enumerationValue key="display">Display</enumerationValue>
                 </enumerationValues>
             </property>
-            <property key="precisionForAverage" type="integer" defaultValue="0">
-                <caption>Average precision</caption>
-                <description>Decimal precision for average</description>
-            </property>
             <property key="precisionForNumbers" type="integer" defaultValue="2">
                 <caption>Numeric precision</caption>
                 <description>Decimal precision for numeric values</description>
@@ -361,6 +357,15 @@
                     <translation lang="en_US">MM/dd/yyyy hh:mm:ss a</translation>
                     <translation lang="en_GB">dd/MM/yyyy HH:mm:ss</translation>
                     <translation lang="nl_NL">dd-MM-yyyy HH:mm:ss</translation>
+                </translations>
+            </property>
+            <property key="exportDateformat" type="textTemplate">
+                <caption>Export cell date format</caption>
+                <description>Export value date format, applicable for date/time only</description>
+                <translations>
+                    <translation lang="en_US">mm/dd/yyyy</translation>
+                    <translation lang="en_GB">dd/mm/yyyy</translation>
+                    <translation lang="nl_NL">dd-mm-yyyy</translation>
                 </translations>
             </property>
         </propertyGroup>
