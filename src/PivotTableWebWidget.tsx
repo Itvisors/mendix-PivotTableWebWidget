@@ -340,17 +340,24 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Export");
 
+        // Excel format for date cells, independent of how the pivot table itself displays them.
+        const dateNumFmt = this.getExportDateFormat();
+
+        // Excel format for numeric cells. Unlike dates, there is no need to deviate from the UI here,
+        // so this reuses the existing precisionForNumbers/useThousandSeparators properties.
+        const numberNumFmt = this.getExportNumberFormat();
+
         // Header
-        this.addExcelRow(worksheet, headerRow);
+        this.addExcelRow(worksheet, headerRow, dateNumFmt, numberNumFmt);
 
         // Body
         for (const row of bodyRows) {
-            this.addExcelRow(worksheet, row);
+            this.addExcelRow(worksheet, row, dateNumFmt, numberNumFmt);
         }
 
         // Footer
         if (this.props.showTotalRow && footerRow) {
-            this.addExcelRow(worksheet, footerRow);
+            this.addExcelRow(worksheet, footerRow, dateNumFmt, numberNumFmt);
         }
 
         const buffer = await workbook.xlsx.writeBuffer();
@@ -358,10 +365,44 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
         return URL.createObjectURL(blob);
     }
 
-    private addExcelRow(worksheet: ExcelJS.Worksheet, row: TableRowData): void {
-        // Styling (bold, font color, background color) volgt later.
+    private getExportDateFormat(): string {
+        // exportDateformat is its own Excel format (numFmt syntax, e.g. "dd-mm-yyyy hh:mm:ss"), independent of
+        // cellValueDateformat. This lets the Excel display deviate from the pivot table itself, and there is
+        // no longer any need to convert a Mendix date pattern into Excel syntax.
+        const { exportDateformat } = this.props;
+        return exportDateformat?.value ? exportDateformat.value : "dd-mm-yyyy";
+    }
+
+    private getExportNumberFormat(): string {
+        const { useThousandSeparators } = this.props;
+        const precision = this.getExportNumberPrecision();
+
+        const integerPart = useThousandSeparators ? "#,##0" : "0";
+        return precision > 0 ? integerPart + "." + "0".repeat(precision) : integerPart;
+    }
+
+    private getExportNumberPrecision(): number {
+        const { cellValueAction, precisionForNumbers } = this.props;
+
+        // Mirrors Data.ts's formatValue: count is always a whole number, everything else
+        // (sum/average/min/max/display) uses the general numeric precision.
+        return cellValueAction === "count" ? 0 : precisionForNumbers;
+    }
+
+    private addExcelRow(worksheet: ExcelJS.Worksheet, row: TableRowData, dateNumFmt: string, numberNumFmt: string): void {
+        // Other styling (bold, font color, background color) follows later.
         const rowValues = row.cells.map(cell => this.getExcelCellValue(cell));
-        worksheet.addRow(rowValues);
+        const excelRow = worksheet.addRow(rowValues);
+
+        // Set the Excel format explicitly on every date/number cell. Excel otherwise guesses a format
+        // of its own, and that guess is not always what the widget's user intended.
+        rowValues.forEach((cellValue, index) => {
+            if (cellValue instanceof Date) {
+                excelRow.getCell(index + 1).numFmt = dateNumFmt;
+            } else if (typeof cellValue === "number") {
+                excelRow.getCell(index + 1).numFmt = numberNumFmt;
+            }
+        });
     }
 
     private getExcelCellValue(cell: TableCellData): string | number | Date | undefined {
