@@ -1,5 +1,5 @@
 import { PivotTableWebWidgetPreviewProps } from "../typings/PivotTableWebWidgetProps";
-import { hidePropertyIn, hidePropertiesIn } from "@mendix/pluggable-widgets-tools";
+import { hidePropertyIn, hidePropertiesIn, hideNestedPropertiesIn } from "@mendix/pluggable-widgets-tools";
 
 export type Platform = "web" | "desktop";
 
@@ -117,32 +117,93 @@ export function getProperties(values: PivotTableWebWidgetPreviewProps, defaultPr
             "exportButtonClass",
             "exportFilenamePrefix",
             "exportFilenameDateformat",
-            "exportDateformat",
-            "excelHeaderFontColor",
-            "excelHeaderFontBold",
-            "excelHeaderBackgroundColor",
-            "excelHeaderRotationDegree"
+            "exportDateformat"
         ]);
     }
 
-    if (values.allowExport && values.exportType === "csv") {
+    // Hide Excel layout properties unless exporting to Excel, both on the widget and on each conditional styling item.
+    if (!isExcelExport(values)) {
         hidePropertiesIn(defaultProperties, values, ["excelHeaderFontColor", "excelHeaderFontBold", "excelHeaderBackgroundColor", "excelHeaderRotationDegree"]);
+        values.conditionalStylingList.forEach((_item, index) => {
+            hideNestedPropertiesIn(defaultProperties, values, "conditionalStylingList", index, ["excelFontColor", "excelFontBold", "excelBackgroundColor"]);
+        });
     }
 
     return defaultProperties;
 }
 
+// Excel layout properties are only visible (and therefore only validated) when exporting to Excel.
+function isExcelExport(values: PivotTableWebWidgetPreviewProps): boolean {
+    return values.allowExport && values.exportType === "xlsx";
+}
+
+// ExcelJS color format: AARRGGBB, exactly 8 hexadecimal characters.
+const ARGB_COLOR_REGEX = /^[0-9A-Fa-f]{8}$/;
+
+// ExcelJS textRotation: -90 thru 90 degrees, or 255 for vertical text.
+const EXCEL_ROTATION_VERTICAL = 255;
+
 export function check(values: PivotTableWebWidgetPreviewProps): Problem[] {
+    let errors: Problem[];
     switch (values.dataSourceType) {
         case "datasource":
-            return checkDatasourceProps(values);
+            errors = checkDatasourceProps(values);
+            break;
 
         case "serviceCall":
-            return checkServiceProps(values);
+            errors = checkServiceProps(values);
+            break;
 
         default:
-            return [];
+            errors = [];
     }
+
+    return errors.concat(checkExcelExportProps(values));
+}
+
+function checkExcelExportProps(values: PivotTableWebWidgetPreviewProps): Problem[] {
+    const errors: Problem[] = [];
+
+    if (!isExcelExport(values)) {
+        return errors;
+    }
+
+    const { excelHeaderFontColor, excelHeaderBackgroundColor, excelHeaderRotationDegree, conditionalStylingList } = values;
+
+    checkArgbColor(errors, "excelHeaderFontColor", "Excel header font color", excelHeaderFontColor);
+    checkArgbColor(errors, "excelHeaderBackgroundColor", "Excel header background color", excelHeaderBackgroundColor);
+
+    // Integer property, null when the field is cleared in Studio Pro. Runtime default is 0, so empty is allowed.
+    if (excelHeaderRotationDegree !== null && !isValidExcelRotation(excelHeaderRotationDegree)) {
+        errors.push({
+            property: "excelHeaderRotationDegree",
+            message: "Excel header rotation must be between -90 and 90 degrees, or 255 for vertical text"
+        });
+    }
+
+    // Nested properties cannot be addressed directly, so report on the list and name the item.
+    conditionalStylingList.forEach((item, index) => {
+        const itemCaption = "Conditional styling item " + (index + 1);
+        checkArgbColor(errors, "conditionalStylingList", itemCaption + ": Excel font color", item.excelFontColor);
+        checkArgbColor(errors, "conditionalStylingList", itemCaption + ": Excel background color", item.excelBackgroundColor);
+    });
+
+    return errors;
+}
+
+function checkArgbColor(errors: Problem[], property: string, caption: string, value: string): void {
+    // Color properties are optional, only validate when a value was entered.
+    const trimmedValue = value ? value.trim() : "";
+    if (trimmedValue && !ARGB_COLOR_REGEX.test(trimmedValue)) {
+        errors.push({
+            property,
+            message: caption + " '" + value + "' is not a valid ARGB color. Use 8 hexadecimal characters (AARRGGBB), for example FFFF0000 for red"
+        });
+    }
+}
+
+function isValidExcelRotation(degree: number): boolean {
+    return (degree >= -90 && degree <= 90) || degree === EXCEL_ROTATION_VERTICAL;
 }
 
 function checkCommonProps(values: PivotTableWebWidgetPreviewProps): Problem[] {
