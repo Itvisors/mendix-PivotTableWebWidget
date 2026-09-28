@@ -137,17 +137,9 @@ For earlier Mendix releases, the widget will set the X and Y id values on the co
 
 # Export
 
-The widget can export the table data as CSV. For Mendix 10.21 and newer, the file download is triggered directly from the browser.
+The widget can export the table data as CSV and Excel directly from the browser.
 
-For earlier Mendix releases, the export relies on the backend to handle the file creation. You will need to do the following:
-- Create an entity that inherits from FileDocument to create the CSV file.
-- Create a microflow that handles the export:
-    - Create an object of the entity that inherits from FileDocument. Unless the document needs to be kept, be sure to set DeleteAfterDownload to true.
-	- Use CommunityCommons.StringToFile to store the CSV data in the file document.
-    - Clear the export data on the context object to reduce its size.
-	- Use the Download File activity to actually download the file.
-
-The demo project has microflow ACT_ExportToCsv that performs these actions.
+For Excel export only, several layout properties are available in the conditional styling
 
 # Demo project
 https://testpivottablewebwidget-sandbox.mxapps.io/
