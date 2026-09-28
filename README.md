@@ -139,7 +139,7 @@ For earlier Mendix releases, the widget will set the X and Y id values on the co
 
 The widget can export the table data as CSV and Excel directly from the browser.
 
-For Excel export only, several layout properties are available in the conditional styling
+For Excel export only,  several layout properties are available in the export tab for the X and Y axis labels and in the in the conditional styling to apply on the cells.
 
 # Demo project
 https://testpivottablewebwidget-sandbox.mxapps.io/

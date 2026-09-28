@@ -257,7 +257,7 @@
                         </property>
                         <property key="excelFontColor" type="string" required="false">
                             <caption>Excel font color</caption>
-                            <description></description>
+                            <description>ARGB format, FFFF0000 for red. AARRGGBB:  AA is the transparency (alpha), 00 fully transparent, FF fully opaque. RR, GG, BB are the red, green and blue components, 00 thru FF</description>
                         </property>
                         <property key="excelFontBold" type="boolean" defaultValue="false">
                             <caption>Excel font bold</caption>
@@ -265,7 +265,7 @@
                         </property>
                         <property key="excelBackgroundColor" type="string" required="false">
                             <caption>Excel background color</caption>
-                            <description></description>
+                            <description>ARGB format, see above</description>
                         </property>
                     </propertyGroup>
                 </properties>
@@ -382,7 +382,7 @@
             </property>
             <property key="excelHeaderFontColor" type="string" required="false">
                 <caption>Excel header font color</caption>
-                <description></description>
+                <description>ARGB format, FFFF0000 for red. AARRGGBB:  AA is the transparency (alpha), 00 fully transparent, FF fully opaque. RR, GG, BB are the red, green and blue components, 00 thru FF</description>
             </property>
             <property key="excelHeaderFontBold" type="boolean" defaultValue="true">
                 <caption>Excel header font bold</caption>
@@ -390,7 +390,7 @@
             </property>
             <property key="excelHeaderBackgroundColor" type="string" required="false">
                 <caption>Excel header background color</caption>
-                <description></description>
+                <description>ARGB format, see above</description>
             </property>
             <property key="excelHeaderRotationDegree" type="integer" defaultValue="0">
                 <caption>Excel header rotation</caption>

@@ -14,8 +14,8 @@ export interface TableCellData {
     rawCellValue?: ModelCellValue;
     classes?: string;
     excelFontColor?: string;
+    excelFontBold?: boolean;
     excelBackgroundColor?: string;
-    excelTextBold?: boolean;
 }
 
 export interface TableRowData {
