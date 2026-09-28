@@ -111,7 +111,22 @@ export function getProperties(values: PivotTableWebWidgetPreviewProps, defaultPr
 
     // Hide export properties if export not allowed
     if (!values.allowExport) {
-        hidePropertiesIn(defaultProperties, values, ["exportButtonCaption", "exportButtonClass", "exportFilenamePrefix", "exportFilenameDateformat"]);
+        hidePropertiesIn(defaultProperties, values, [
+            "exportType",
+            "exportButtonCaption",
+            "exportButtonClass",
+            "exportFilenamePrefix",
+            "exportFilenameDateformat",
+            "exportDateformat",
+            "excelHeaderFontColor",
+            "excelHeaderFontBold",
+            "excelHeaderBackgroundColor",
+            "excelHeaderRotationDegree"
+        ]);
+    }
+
+    if (values.allowExport && values.exportType === "csv") {
+        hidePropertiesIn(defaultProperties, values, ["excelHeaderFontColor", "excelHeaderFontBold", "excelHeaderBackgroundColor", "excelHeaderRotationDegree"]);
     }
 
     return defaultProperties;

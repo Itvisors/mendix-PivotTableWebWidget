@@ -255,6 +255,18 @@
                             <description>Date threshold value. for date values only.</description>
                             <returnType type="DateTime" />
                         </property>
+                        <property key="excelFontColor" type="string" required="false">
+                            <caption>Excel font color</caption>
+                            <description></description>
+                        </property>
+                        <property key="excelFontBold" type="boolean" defaultValue="false">
+                            <caption>Excel font bold</caption>
+                            <description></description>
+                        </property>
+                        <property key="excelBackgroundColor" type="string" required="false">
+                            <caption>Excel background color</caption>
+                            <description></description>
+                        </property>
                     </propertyGroup>
                 </properties>
             </property>
@@ -361,12 +373,28 @@
             </property>
             <property key="exportDateformat" type="textTemplate">
                 <caption>Export cell date format</caption>
-                <description>Export value date format, applicable for date/time only</description>
+                <description>Excel export value date format, applicable for date/time only</description>
                 <translations>
                     <translation lang="en_US">mm/dd/yyyy</translation>
                     <translation lang="en_GB">dd/mm/yyyy</translation>
                     <translation lang="nl_NL">dd-mm-yyyy</translation>
                 </translations>
+            </property>
+            <property key="excelHeaderFontColor" type="string" required="false">
+                <caption>Excel header font color</caption>
+                <description></description>
+            </property>
+            <property key="excelHeaderFontBold" type="boolean" defaultValue="true">
+                <caption>Excel header font bold</caption>
+                <description></description>
+            </property>
+            <property key="excelHeaderBackgroundColor" type="string" required="false">
+                <caption>Excel header background color</caption>
+                <description></description>
+            </property>
+            <property key="excelHeaderRotationDegree" type="integer" defaultValue="0">
+                <caption>Excel header rotation</caption>
+                <description>Excel header rotation degree</description>
             </property>
         </propertyGroup>
 

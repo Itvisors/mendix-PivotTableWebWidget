@@ -16,7 +16,6 @@ export interface TableCellData {
     excelFontColor?: string;
     excelBackgroundColor?: string;
     excelTextBold?: boolean;
-    excelRotation?: number;
 }
 
 export interface TableRowData {

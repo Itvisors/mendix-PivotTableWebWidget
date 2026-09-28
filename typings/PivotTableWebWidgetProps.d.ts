@@ -26,6 +26,9 @@ export interface ConditionalStylingListType {
     className?: DynamicValue<string>;
     decimalThresholdValue?: DynamicValue<Big>;
     dateThresholdValue?: DynamicValue<Date>;
+    excelFontColor: string;
+    excelFontBold: boolean;
+    excelBackgroundColor: string;
 }
 
 export type XSortAttrEnum = "label" | "id";
@@ -47,6 +50,9 @@ export interface ConditionalStylingListPreviewType {
     className: string;
     decimalThresholdValue: string;
     dateThresholdValue: string;
+    excelFontColor: string;
+    excelFontBold: boolean;
+    excelBackgroundColor: string;
 }
 
 export interface PivotTableWebWidgetContainerProps {
@@ -93,6 +99,10 @@ export interface PivotTableWebWidgetContainerProps {
     exportFilenamePrefix: string;
     exportFilenameDateformat: DynamicValue<string>;
     exportDateformat: DynamicValue<string>;
+    excelHeaderFontColor: string;
+    excelHeaderFontBold: boolean;
+    excelHeaderBackgroundColor: string;
+    excelHeaderRotationDegree: number;
     logToConsole: boolean;
     dumpServiceResponseInConsole: boolean;
 }
@@ -147,6 +157,10 @@ export interface PivotTableWebWidgetPreviewProps {
     exportFilenamePrefix: string;
     exportFilenameDateformat: string;
     exportDateformat: string;
+    excelHeaderFontColor: string;
+    excelHeaderFontBold: boolean;
+    excelHeaderBackgroundColor: string;
+    excelHeaderRotationDegree: number | null;
     logToConsole: boolean;
     dumpServiceResponseInConsole: boolean;
 }
