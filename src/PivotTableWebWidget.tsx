@@ -434,6 +434,15 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
     }
 
     private convertRawCellValue(rawCellValue: ModelCellValue): string | number | Date {
+        // For "display", rawCellValue is always Mendix's own formatted displayValue text (see Data.ts,
+        // getDataItemFromDatasource), regardless of what this.valueDataType happens to be - that field
+        // reflects the last Date/Big-typed attribute Data.ts processed (which can be an axis id, not
+        // necessarily the value attribute), so it is not a reliable signal here. Casting a display value
+        // with Number()/Date() can turn a perfectly valid string into NaN and produce a corrupt Excel file.
+        if (this.props.cellValueAction === "display") {
+            return rawCellValue;
+        }
+
         switch (this.valueDataType) {
             case "date":
                 return this.toExcelDate(new Date(Number(rawCellValue)));
