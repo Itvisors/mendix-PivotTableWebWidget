@@ -10,7 +10,8 @@ import {
     TableRowData,
     ValueDataType,
     InputRow,
-    ConditionalStylingArray
+    ConditionalStylingArray,
+    ConditionalStylingItem
 } from "../types/CustomTypes";
 import { Big } from "big.js";
 import { PivotTableWebWidgetContainerProps, XSortAttrEnum } from "../../typings/PivotTableWebWidgetProps";
@@ -422,20 +423,15 @@ export default class Data {
                 }
                 conditionalStylingArray.push({
                     className: item.className?.value ? item.className.value : "",
-                    value
+                    value,
+                    excelFontColor: item.excelFontColor,
+                    excelFontBold: item.excelFontBold,
+                    excelBackgroundColor: item.excelBackgroundColor
                 });
             }
 
             // Sort the array
-            this._modelData.conditionalStylingArray = conditionalStylingArray.sort((itemA, itemB) => {
-                if (itemA.value < itemB.value) {
-                    return -1;
-                }
-                if (itemB.value > itemA.value) {
-                    return 1;
-                }
-                return 0;
-            });
+            this._modelData.conditionalStylingArray = conditionalStylingArray.sort((itemA, itemB) => itemA.value - itemB.value);
         }
     }
 
@@ -678,9 +674,14 @@ export default class Data {
                 cell.classes += " display-" + cell.cellValue.replace(/[^A-Za-z0-9]/g, "_").toLowerCase();
             }
             if (cellValueAction !== "display") {
-                const conditionalStylingClass = this.getConditionalStylingClass(value);
-                if (conditionalStylingClass) {
-                    cell.classes += " " + conditionalStylingClass;
+                const conditionalStylingItem = this.getConditionalStylingItem(value);
+                if (conditionalStylingItem) {
+                    if (conditionalStylingItem.className) {
+                        cell.classes += " " + conditionalStylingItem.className;
+                    }
+                    cell.excelFontColor = conditionalStylingItem.excelFontColor;
+                    cell.excelFontBold = conditionalStylingItem.excelFontBold;
+                    cell.excelBackgroundColor = conditionalStylingItem.excelBackgroundColor;
                 }
             }
         } else {
@@ -692,24 +693,24 @@ export default class Data {
         return cell;
     }
 
-    private getConditionalStylingClass(value: ModelCellData): string | undefined {
+    private getConditionalStylingItem(value: ModelCellData): ConditionalStylingItem | undefined {
         const { conditionalStylingArray } = this._modelData;
 
         if (!conditionalStylingArray) {
             return undefined;
         }
 
-        // Loop through the conditional styling array. Take the class name when aggregated value >= item value.
+        // Loop through the conditional styling array. Take the item when aggregated value >= item value.
         // If the aggregated value exceeds the value of multiple items, the result will be that the item with the highest matching value is used.
         // (The array is sorted on value.)
-        let className: string | undefined;
+        let result: ConditionalStylingItem | undefined;
         for (const item of conditionalStylingArray) {
             if (value.aggregatedValue >= item.value) {
-                className = item.className;
+                result = item;
             }
         }
 
-        return className;
+        return result;
     }
 
     private getCellSum(cellData: ModelCellData): number {

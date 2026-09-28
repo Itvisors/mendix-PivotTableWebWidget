@@ -13,6 +13,7 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
     private CLASS_CELL_CLICKABLE = "clickable";
     private CLASS_CONFIG_ERRORS = "configurationErrors";
     private CLASS_NO_DATA = "noDataAvailable";
+    private EXCEL_ROTATION_VERTICAL = 255;
     private previousDataChangeDate?: Date = undefined;
     private previousDataSourceItemArray?: ObjectItem[] = undefined;
     private tableData?: TableData = undefined;
@@ -390,19 +391,76 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
     }
 
     private addExcelRow(worksheet: ExcelJS.Worksheet, row: TableRowData, dateNumFmt: string, numberNumFmt: string): void {
-        // Other styling (bold, font color, background color) follows later.
         const rowValues = row.cells.map(cell => this.getExcelCellValue(cell));
         const excelRow = worksheet.addRow(rowValues);
 
-        // Set the Excel format explicitly on every date/number cell. Excel otherwise guesses a format
-        // of its own, and that guess is not always what the widget's user intended.
         rowValues.forEach((cellValue, index) => {
+            const excelCell = excelRow.getCell(index + 1);
+
+            // Set the Excel format explicitly on every date/number cell. Excel otherwise guesses a format
+            // of its own, and that guess is not always what the widget's user intended.
             if (cellValue instanceof Date) {
-                excelRow.getCell(index + 1).numFmt = dateNumFmt;
+                excelCell.numFmt = dateNumFmt;
             } else if (typeof cellValue === "number") {
-                excelRow.getCell(index + 1).numFmt = numberNumFmt;
+                excelCell.numFmt = numberNumFmt;
             }
+
+            this.applyExcelCellStyle(excelCell, row.cells[index]);
         });
+    }
+
+    private applyExcelCellStyle(excelCell: ExcelJS.Cell, cell: TableCellData): void {
+        const { excelHeaderFontColor, excelHeaderFontBold, excelHeaderBackgroundColor } = this.props;
+
+        switch (cell.cellType) {
+            // Header styling applies to the labels of both axes, rotation only to the column headers.
+            case "ColumnHeader":
+                this.applyExcelFontAndFill(excelCell, excelHeaderFontColor, excelHeaderFontBold, excelHeaderBackgroundColor);
+                this.applyExcelHeaderRotation(excelCell);
+                break;
+
+            case "RowHeader":
+                this.applyExcelFontAndFill(excelCell, excelHeaderFontColor, excelHeaderFontBold, excelHeaderBackgroundColor);
+                break;
+
+            // Conditional styling, only set on data cells (see Data.ts, createTableCell).
+            case "Value":
+                this.applyExcelFontAndFill(excelCell, cell.excelFontColor, cell.excelFontBold, cell.excelBackgroundColor);
+                break;
+        }
+    }
+
+    private applyExcelFontAndFill(excelCell: ExcelJS.Cell, fontColor?: string, fontBold?: boolean, backgroundColor?: string): void {
+        // Color properties are optional, empty means no color. Values are validated in the editor config.
+        const fontArgb = fontColor?.trim();
+        const backgroundArgb = backgroundColor?.trim();
+
+        if (fontArgb || fontBold) {
+            const font: Partial<ExcelJS.Font> = {};
+            if (fontArgb) {
+                font.color = { argb: fontArgb };
+            }
+            if (fontBold) {
+                font.bold = true;
+            }
+            excelCell.font = font;
+        }
+
+        if (backgroundArgb) {
+            excelCell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: backgroundArgb } };
+        }
+    }
+
+    private applyExcelHeaderRotation(excelCell: ExcelJS.Cell): void {
+        const { excelHeaderRotationDegree } = this.props;
+        if (!excelHeaderRotationDegree) {
+            return;
+        }
+
+        // ExcelJS only accepts -90 thru 90 as number, vertical text (255 in Excel) must be passed as "vertical".
+        excelCell.alignment = {
+            textRotation: excelHeaderRotationDegree === this.EXCEL_ROTATION_VERTICAL ? "vertical" : excelHeaderRotationDegree
+        };
     }
 
     private getExcelCellValue(cell: TableCellData): string | number | Date | undefined {

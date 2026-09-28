@@ -46,6 +46,9 @@ export interface ModelCellData {
 export interface ConditionalStylingItem {
     value: number;
     className: string;
+    excelFontColor?: string;
+    excelFontBold: boolean;
+    excelBackgroundColor?: string;
 }
 
 export type ConditionalStylingArray = ConditionalStylingItem[];
