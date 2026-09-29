@@ -381,20 +381,36 @@
                 </translations>
             </property>
             <property key="excelHeaderFontColor" type="string" required="false">
-                <caption>Excel header font color</caption>
+                <caption>Header font color</caption>
                 <description>ARGB format, FFFF0000 for red. AARRGGBB:  AA is the transparency (alpha), 00 fully transparent, FF fully opaque. RR, GG, BB are the red, green and blue components, 00 thru FF</description>
             </property>
             <property key="excelHeaderFontBold" type="boolean" defaultValue="true">
-                <caption>Excel header font bold</caption>
+                <caption>Header font bold</caption>
                 <description></description>
             </property>
             <property key="excelHeaderBackgroundColor" type="string" required="false">
-                <caption>Excel header background color</caption>
+                <caption>Header background color</caption>
                 <description>ARGB format, see above</description>
             </property>
             <property key="excelHeaderRotationDegree" type="integer" defaultValue="0">
-                <caption>Excel header rotation</caption>
+                <caption>Header rotation</caption>
                 <description>Excel header rotation degree</description>
+            </property>
+            <property key="excelTopRowHeight" type="integer" defaultValue="0">
+                <caption>Top row height</caption>
+                <description>Height of the header row in points. 0 leaves the height to Excel.</description>
+            </property>
+            <property key="excelFirstColumnWidth" type="integer" defaultValue="0">
+                <caption>First column width</caption>
+                <description>Width of the row label column in characters. 0 leaves the width to Excel.</description>
+            </property>
+            <property key="excelDataColumnWidth" type="integer" defaultValue="0">
+                <caption>Data column width</caption>
+                <description>Width of each data column in characters. 0 leaves the width to Excel.</description>
+            </property>
+            <property key="excelTotalColumnWidth" type="integer" defaultValue="0">
+                <caption>Total column width</caption>
+                <description>Width of the total column in characters. 0 leaves the width to Excel.</description>
             </property>
         </propertyGroup>
 

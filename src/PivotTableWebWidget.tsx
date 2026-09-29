@@ -361,9 +361,36 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
             this.addExcelRow(worksheet, footerRow, dateNumFmt, numberNumFmt);
         }
 
+        this.applyExcelSizes(worksheet, headerRow.cells.length);
+
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
         return URL.createObjectURL(blob);
+    }
+
+    private applyExcelSizes(worksheet: ExcelJS.Worksheet, columnCount: number): void {
+        // Fixed values set by the developer, 0 means leave it to Excel.
+        const { excelTopRowHeight, excelFirstColumnWidth, excelDataColumnWidth, excelTotalColumnWidth, showTotalColumn } = this.props;
+
+        if (excelTopRowHeight > 0) {
+            worksheet.getRow(1).height = excelTopRowHeight;
+        }
+
+        // Columns: row labels first, then the data columns, then the total column, if any.
+        const lastDataColumn = showTotalColumn ? columnCount - 1 : columnCount;
+        for (let columnNumber = 1; columnNumber <= columnCount; columnNumber++) {
+            let width: number;
+            if (columnNumber === 1) {
+                width = excelFirstColumnWidth;
+            } else if (columnNumber <= lastDataColumn) {
+                width = excelDataColumnWidth;
+            } else {
+                width = excelTotalColumnWidth;
+            }
+            if (width > 0) {
+                worksheet.getColumn(columnNumber).width = width;
+            }
+        }
     }
 
     private getExportDateFormat(): string {

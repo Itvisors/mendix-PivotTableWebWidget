@@ -103,6 +103,10 @@ export interface PivotTableWebWidgetContainerProps {
     excelHeaderFontBold: boolean;
     excelHeaderBackgroundColor: string;
     excelHeaderRotationDegree: number;
+    excelTopRowHeight: number;
+    excelFirstColumnWidth: number;
+    excelDataColumnWidth: number;
+    excelTotalColumnWidth: number;
     logToConsole: boolean;
     dumpServiceResponseInConsole: boolean;
 }
@@ -161,6 +165,10 @@ export interface PivotTableWebWidgetPreviewProps {
     excelHeaderFontBold: boolean;
     excelHeaderBackgroundColor: string;
     excelHeaderRotationDegree: number | null;
+    excelTopRowHeight: number | null;
+    excelFirstColumnWidth: number | null;
+    excelDataColumnWidth: number | null;
+    excelTotalColumnWidth: number | null;
     logToConsole: boolean;
     dumpServiceResponseInConsole: boolean;
 }

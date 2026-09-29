@@ -123,10 +123,21 @@ export function getProperties(values: PivotTableWebWidgetPreviewProps, defaultPr
 
     // Hide Excel layout properties unless exporting to Excel, both on the widget and on each conditional styling item.
     if (!isExcelExport(values)) {
-        hidePropertiesIn(defaultProperties, values, ["excelHeaderFontColor", "excelHeaderFontBold", "excelHeaderBackgroundColor", "excelHeaderRotationDegree"]);
+        hidePropertiesIn(defaultProperties, values, [
+            "excelHeaderFontColor",
+            "excelHeaderFontBold",
+            "excelHeaderBackgroundColor",
+            "excelHeaderRotationDegree",
+            "excelTopRowHeight",
+            "excelFirstColumnWidth",
+            "excelDataColumnWidth",
+            "excelTotalColumnWidth"
+        ]);
         values.conditionalStylingList.forEach((_item, index) => {
             hideNestedPropertiesIn(defaultProperties, values, "conditionalStylingList", index, ["excelFontColor", "excelFontBold", "excelBackgroundColor"]);
         });
+    } else if (!values.showTotalColumn) {
+        hidePropertyIn(defaultProperties, values, "excelTotalColumnWidth");
     }
 
     return defaultProperties;
@@ -142,6 +153,10 @@ const ARGB_COLOR_REGEX = /^[0-9A-Fa-f]{8}$/;
 
 // ExcelJS textRotation: -90 thru 90 degrees, or 255 for vertical text.
 const EXCEL_ROTATION_VERTICAL = 255;
+
+// Excel limits: row height in points, column width in characters.
+const EXCEL_MAX_ROW_HEIGHT = 409;
+const EXCEL_MAX_COLUMN_WIDTH = 255;
 
 export function check(values: PivotTableWebWidgetPreviewProps): Problem[] {
     let errors: Problem[];
@@ -181,6 +196,13 @@ function checkExcelExportProps(values: PivotTableWebWidgetPreviewProps): Problem
         });
     }
 
+    checkExcelSize(errors, "excelTopRowHeight", "Excel top row height", values.excelTopRowHeight, EXCEL_MAX_ROW_HEIGHT);
+    checkExcelSize(errors, "excelFirstColumnWidth", "Excel first column width", values.excelFirstColumnWidth, EXCEL_MAX_COLUMN_WIDTH);
+    checkExcelSize(errors, "excelDataColumnWidth", "Excel data column width", values.excelDataColumnWidth, EXCEL_MAX_COLUMN_WIDTH);
+    if (values.showTotalColumn) {
+        checkExcelSize(errors, "excelTotalColumnWidth", "Excel total column width", values.excelTotalColumnWidth, EXCEL_MAX_COLUMN_WIDTH);
+    }
+
     // Nested properties cannot be addressed directly, so report on the list and name the item.
     conditionalStylingList.forEach((item, index) => {
         const itemCaption = "Conditional styling item " + (index + 1);
@@ -198,6 +220,16 @@ function checkArgbColor(errors: Problem[], property: string, caption: string, va
         errors.push({
             property,
             message: caption + " '" + value + "' is not a valid ARGB color. Use 8 hexadecimal characters (AARRGGBB), for example FFFF0000 for red"
+        });
+    }
+}
+
+function checkExcelSize(errors: Problem[], property: string, caption: string, value: number | null, maxValue: number): void {
+    // Integer property, null when the field is cleared in Studio Pro. Runtime default is 0 (no action), so empty is allowed.
+    if (value !== null && (value < 0 || value > maxValue)) {
+        errors.push({
+            property,
+            message: caption + " must be between 0 and " + maxValue + ", 0 leaves it to Excel"
         });
     }
 }
