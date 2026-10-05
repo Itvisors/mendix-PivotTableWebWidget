@@ -450,7 +450,7 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
                 this.applyExcelFontAndFill(excelCell, excelHeaderFontColor, excelHeaderFontBold, excelHeaderBackgroundColor);
                 break;
 
-            // Conditional styling, only set on data cells (see Data.ts, createTableCell).
+            // Conditional styling or display action style, only set on data cells (see Data.ts, createTableCell).
             case "Value":
                 this.applyExcelFontAndFill(excelCell, cell.excelFontColor, cell.excelFontBold, cell.excelBackgroundColor);
                 break;

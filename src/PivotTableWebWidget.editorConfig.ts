@@ -140,12 +140,21 @@ export function getProperties(values: PivotTableWebWidgetPreviewProps, defaultPr
         hidePropertyIn(defaultProperties, values, "excelTotalColumnWidth");
     }
 
+    // Display action styles only apply to Excel export with cell value action display.
+    if (!isExcelDisplayExport(values)) {
+        hidePropertyIn(defaultProperties, values, "excelDisplayActionStyles");
+    }
+
     return defaultProperties;
 }
 
 // Excel layout properties are only visible (and therefore only validated) when exporting to Excel.
 function isExcelExport(values: PivotTableWebWidgetPreviewProps): boolean {
     return values.allowExport && values.exportType === "xlsx";
+}
+
+function isExcelDisplayExport(values: PivotTableWebWidgetPreviewProps): boolean {
+    return isExcelExport(values) && values.cellValueAction === "display";
 }
 
 // ExcelJS color format: AARRGGBB, exactly 8 hexadecimal characters.
@@ -209,6 +218,14 @@ function checkExcelExportProps(values: PivotTableWebWidgetPreviewProps): Problem
         checkArgbColor(errors, "conditionalStylingList", itemCaption + ": Excel font color", item.excelFontColor);
         checkArgbColor(errors, "conditionalStylingList", itemCaption + ": Excel background color", item.excelBackgroundColor);
     });
+
+    if (isExcelDisplayExport(values)) {
+        values.excelDisplayActionStyles.forEach((item, index) => {
+            const itemCaption = "Display action style " + (index + 1);
+            checkArgbColor(errors, "excelDisplayActionStyles", itemCaption + ": Excel font color", item.fontColor);
+            checkArgbColor(errors, "excelDisplayActionStyles", itemCaption + ": Excel background color", item.backgroundColor);
+        });
+    }
 
     return errors;
 }

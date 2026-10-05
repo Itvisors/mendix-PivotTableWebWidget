@@ -1,3 +1,5 @@
+import { ExcelDisplayActionStylesType } from "../../typings/PivotTableWebWidgetProps";
+
 export type TableCellType = "ColumnHeader" | "RowHeader" | "Value" | "RowTotal" | "ColumnTotal" | "RowColumnTotal" | "ExportButton" | "EmptyTopLeft" | "Empty";
 
 export type AxisSortType = "string" | "number" | undefined;
@@ -53,6 +55,8 @@ export interface ConditionalStylingItem {
 
 export type ConditionalStylingArray = ConditionalStylingItem[];
 
+export type DisplayActionStyleMap = Map<string, ExcelDisplayActionStylesType>;
+
 export type ErrorArray = string[];
 
 export interface ModelData {
@@ -63,6 +67,7 @@ export interface ModelData {
     yAxisArray: AxisKeyData[];
     tableData: TableData;
     conditionalStylingArray?: ConditionalStylingArray;
+    displayActionStyleMap?: DisplayActionStyleMap;
     errorArray?: ErrorArray;
 }
 

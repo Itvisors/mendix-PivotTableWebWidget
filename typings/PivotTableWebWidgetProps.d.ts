@@ -41,6 +41,13 @@ export type YSortDirectionEnum = "asc" | "desc";
 
 export type ExportTypeEnum = "csv" | "xlsx";
 
+export interface ExcelDisplayActionStylesType {
+    displayValue: string;
+    fontBold: boolean;
+    fontColor: string;
+    backgroundColor: string;
+}
+
 export interface ServiceParmListPreviewType {
     parameterName: string;
     parameterValue: string;
@@ -53,6 +60,13 @@ export interface ConditionalStylingListPreviewType {
     excelFontColor: string;
     excelFontBold: boolean;
     excelBackgroundColor: string;
+}
+
+export interface ExcelDisplayActionStylesPreviewType {
+    displayValue: string;
+    fontBold: boolean;
+    fontColor: string;
+    backgroundColor: string;
 }
 
 export interface PivotTableWebWidgetContainerProps {
@@ -107,6 +121,7 @@ export interface PivotTableWebWidgetContainerProps {
     excelFirstColumnWidth: number;
     excelDataColumnWidth: number;
     excelTotalColumnWidth: number;
+    excelDisplayActionStyles: ExcelDisplayActionStylesType[];
     logToConsole: boolean;
     dumpServiceResponseInConsole: boolean;
 }
@@ -169,6 +184,7 @@ export interface PivotTableWebWidgetPreviewProps {
     excelFirstColumnWidth: number | null;
     excelDataColumnWidth: number | null;
     excelTotalColumnWidth: number | null;
+    excelDisplayActionStyles: ExcelDisplayActionStylesPreviewType[];
     logToConsole: boolean;
     dumpServiceResponseInConsole: boolean;
 }

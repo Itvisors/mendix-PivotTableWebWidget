@@ -342,6 +342,9 @@ export default class Data {
         // Store conditional styling data in array, if any.
         this.createConditionalStylingArray();
 
+        // Store display action styles in a map, if any.
+        this.createDisplayActionStyleMap();
+
         // Aggregate values
         this.aggregateValues();
 
@@ -433,6 +436,17 @@ export default class Data {
             // Sort the array
             this._modelData.conditionalStylingArray = conditionalStylingArray.sort((itemA, itemB) => itemA.value - itemB.value);
         }
+    }
+
+    private createDisplayActionStyleMap(): void {
+        const { cellValueAction, excelDisplayActionStyles } = this._widgetProps;
+
+        if (cellValueAction !== "display" || excelDisplayActionStyles.length === 0) {
+            return;
+        }
+
+        // Map on display value. For duplicate display values, the last item overwrites earlier ones.
+        this._modelData.displayActionStyleMap = new Map(excelDisplayActionStyles.map(item => [item.displayValue, item]));
     }
 
     private createAxisArrays(): void {
@@ -664,6 +678,12 @@ export default class Data {
                 // For display, take the value when there is one and only one value available
                 if (value.values && value.values.length === 1) {
                     cell.rawCellValue = value.values[0];
+                }
+                const displayActionStyle = this._modelData.displayActionStyleMap?.get(cell.cellValue);
+                if (displayActionStyle) {
+                    cell.excelFontColor = displayActionStyle.fontColor;
+                    cell.excelFontBold = displayActionStyle.fontBold;
+                    cell.excelBackgroundColor = displayActionStyle.backgroundColor;
                 }
             } else {
                 cell.cellValue = this.formatValue(value.aggregatedValue);

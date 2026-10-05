@@ -412,6 +412,30 @@
                 <caption>Total column width</caption>
                 <description>Width of the total column in characters. 0 leaves the width to Excel.</description>
             </property>
+            <property key="excelDisplayActionStyles" type="object" isList="true" required="false">
+                <caption>Display action styles</caption>
+                <description>Excel styling for cells with a specific value, for cell value action Display only. If a display value is entered more than once, the last item is used.</description>
+                <properties>
+                    <propertyGroup caption="Display action style">
+                        <property key="displayValue" type="string">
+                            <caption>Display value</caption>
+                            <description>The cell value to apply the styling to.</description>
+                        </property>
+                        <property key="fontBold" type="boolean" defaultValue="false">
+                            <caption>Font bold</caption>
+                            <description></description>
+                        </property>
+                        <property key="fontColor" type="string" required="false">
+                            <caption>Font color</caption>
+                            <description>ARGB format, FFFF0000 for red. AARRGGBB:  AA is the transparency (alpha), 00 fully transparent, FF fully opaque. RR, GG, BB are the red, green and blue components, 00 thru FF</description>
+                        </property>
+                        <property key="backgroundColor" type="string" required="false">
+                            <caption>Background color</caption>
+                            <description>ARGB format, see above</description>
+                        </property>
+                    </propertyGroup>
+                </properties>
+            </property>
         </propertyGroup>
 
         <!-- Advanced properties -->
