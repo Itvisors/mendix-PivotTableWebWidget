@@ -2,7 +2,8 @@ import { Component, ReactNode, SyntheticEvent } from "react";
 import { PivotTableWebWidgetContainerProps } from "../typings/PivotTableWebWidgetProps";
 import { ObjectItem, ValueStatus } from "mendix";
 import { ErrorArray, ModelCellValue, TableCellData, TableData, TableRowData, ValueDataType } from "./types/CustomTypes";
-import ExcelJS from "exceljs";
+// Types only, the library itself is loaded on export, see exportToExcel.
+import type * as ExcelJS from "exceljs";
 import { formatValue } from "mendix/parser";
 
 import "./ui/PivotTableWebWidget.css";
@@ -338,7 +339,9 @@ export default class PivotTableWebWidget extends Component<PivotTableWebWidgetCo
 
         const { headerRow, bodyRows, footerRow } = tableData;
 
-        const workbook = new ExcelJS.Workbook();
+        // ExcelJS is large, only load it when the user actually exports to Excel.
+        const { default: excelJS } = await import("exceljs");
+        const workbook = new excelJS.Workbook();
         const worksheet = workbook.addWorksheet("Export");
 
         // Excel format for date cells, independent of how the pivot table itself displays them.

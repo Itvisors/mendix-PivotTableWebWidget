@@ -8,7 +8,7 @@ Pivot table widget for web pages. This widget replaces the
 - React to click events on the cells.
 - Apply styling thresholds to highlight certain values
 - Apply custom styling to the X and Y labels
-- Export the table data as CSV
+- Export the table data as CSV or Excel, with optional Excel styling
 - When there is no data, no table will be rendered but a (configurable) text will be shown.
 
 # Entity to use
@@ -141,8 +141,21 @@ The widget can export the table data as CSV and Excel directly from the browser.
 
 For Excel export only, several layout properties are available in the export tab for the X and Y axis labels and in the conditional styling to apply on the cells.
 
-# Demo project
-https://testpivottablewebwidget-sandbox.mxapps.io/
+## Excel styling for display action
+Conditional styling is not available for action Display. To style the cells in the Excel export anyway, use the Display action styles list in the export tab. The list is only visible when exporting to Excel and the cell value action is Display.
+
+For each style, enter the display value and the styling to apply to cells with that value:
+
+| Display value | Font bold | Font color | Background color |
+|---------------|:---------:|------------|------------------|
+| Approved      |           | FF006100   | FFC6EFCE         |
+| Rejected      | Yes       | FF9C0006   | FFFFC7CE         |
+
+- The display value must match the value shown in the cell exactly, including upper and lower case. For enumerations, this is the caption, not the key.
+- The display value is translatable. The cell shows the value in the language of the user, so enter the translated text for each language, for enumerations the translated caption.
+- When a cell contains multiple values, these are shown separated by a comma, for example Approved,Rejected. Such a cell only gets styling if exactly that text is entered as display value.
+- Colors use the ARGB format, AARRGGBB, for example FFFF0000 for red. Leave a color empty for no color.
+- If a display value is entered more than once, the last item is used.
 
 # Issues, suggestions and feature requests
 https://github.com/Itvisors/mendix-PivotTableWebWidget/issues

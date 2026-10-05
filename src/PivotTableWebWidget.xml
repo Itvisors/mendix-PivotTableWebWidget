@@ -417,9 +417,9 @@
                 <description>Excel styling for cells with a specific value, for cell value action Display only. If a display value is entered more than once, the last item is used.</description>
                 <properties>
                     <propertyGroup caption="Display action style">
-                        <property key="displayValue" type="string">
+                        <property key="displayValue" type="textTemplate">
                             <caption>Display value</caption>
-                            <description>The cell value to apply the styling to.</description>
+                            <description>The cell value to apply the styling to, translatable. This is case sensitive.</description>
                         </property>
                         <property key="fontBold" type="boolean" defaultValue="false">
                             <caption>Font bold</caption>

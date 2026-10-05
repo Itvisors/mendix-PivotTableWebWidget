@@ -11,7 +11,8 @@ import {
     ValueDataType,
     InputRow,
     ConditionalStylingArray,
-    ConditionalStylingItem
+    ConditionalStylingItem,
+    DisplayActionStyleMap
 } from "../types/CustomTypes";
 import { Big } from "big.js";
 import { PivotTableWebWidgetContainerProps, XSortAttrEnum } from "../../typings/PivotTableWebWidgetProps";
@@ -445,8 +446,15 @@ export default class Data {
             return;
         }
 
-        // Map on display value. For duplicate display values, the last item overwrites earlier ones.
-        this._modelData.displayActionStyleMap = new Map(excelDisplayActionStyles.map(item => [item.displayValue, item]));
+        // Map on the (translated) display value. For duplicate display values, the last item overwrites earlier ones.
+        // Skip items whose display value is not available.
+        const displayActionStyleMap: DisplayActionStyleMap = new Map();
+        for (const item of excelDisplayActionStyles) {
+            if (item.displayValue.value !== undefined) {
+                displayActionStyleMap.set(item.displayValue.value, item);
+            }
+        }
+        this._modelData.displayActionStyleMap = displayActionStyleMap;
     }
 
     private createAxisArrays(): void {

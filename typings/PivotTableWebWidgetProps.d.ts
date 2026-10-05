@@ -42,7 +42,7 @@ export type YSortDirectionEnum = "asc" | "desc";
 export type ExportTypeEnum = "csv" | "xlsx";
 
 export interface ExcelDisplayActionStylesType {
-    displayValue: string;
+    displayValue: DynamicValue<string>;
     fontBold: boolean;
     fontColor: string;
     backgroundColor: string;
